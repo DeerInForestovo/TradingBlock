@@ -1,0 +1,8 @@
+{
+  "item.trading_block.trading_agreement": "交易协议",
+  "item.trading_block.trading_agreement_signed": "交易协议（已签署）",
+  "block.trading_block.trading_station": "交易站",
+  "block.trading_block.trading_station.display_name": "交易站",
+  "itemGroup.trading_block_item_group": "交易方块",
+  "screen.trade_offer_selection_screen_title": "选择一个要签署的交易"
+}
