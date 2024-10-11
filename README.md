@@ -14,3 +14,13 @@ Plans:
 
 + Better textures and GUIs
 + To be a Create Addon
+
+Thanks:
+
+https://github.com/Tutorials-By-Kaupenjoe/Fabric-Tutorial-1.20.X
+
+video (in English): https://www.youtube.com/playlist?list=PLKGarocXCE1EO43Dlf5JGh7Yk-kRAXUEJ
+
+https://github.com/BeiShanair/tutorialmod-1.20
+
+video (in Chinese): https://www.bilibili.com/video/BV14U421Z74D/
