@@ -1,0 +1,8 @@
+{
+  "item.trading_block.trading_agreement": "Trading Agreement",
+  "item.trading_block.trading_agreement_signed": "Trading Agreement (Signed)",
+  "block.trading_block.trading_station": "Trading Station",
+  "block.trading_block.trading_station.display_name": "Trading Station",
+  "itemGroup.trading_block_item_group": "Trading Block",
+  "screen.trade_offer_selection_screen_title": "Select a Trade Offer"
+}

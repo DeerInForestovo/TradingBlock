@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "trading_block:block/trading_station"},
+    "facing=south": { "model": "trading_block:block/trading_station", "y": 180 },
+    "facing=west": { "model": "trading_block:block/trading_station", "y": 270 },
+    "facing=east": { "model": "trading_block:block/trading_station", "y": 90 }
+  }
+}
