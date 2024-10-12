@@ -2,7 +2,6 @@ package com.deerinforest.trading_block.block.entity;
 
 import com.deerinforest.trading_block.TradingBlock;
 import com.deerinforest.trading_block.block.ModBlocks;
-import com.deerinforest.trading_block.block.entity.TradingStationEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;

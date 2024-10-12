@@ -1,12 +1,10 @@
 package com.deerinforest.trading_block.mixin;
 
-import com.deerinforest.trading_block.TradingBlock;
 import com.deerinforest.trading_block.item.ModItems;
 import com.deerinforest.trading_block.item.custom.TradingAgreement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.village.VillagerProfession;
