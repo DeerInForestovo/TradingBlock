@@ -23,7 +23,7 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.IntStream;
+import java.util.Objects;
 
 public class TradingStationEntity extends BlockEntity implements ImplementedInventory, ExtendedScreenHandlerFactory, SidedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
@@ -123,7 +123,9 @@ public class TradingStationEntity extends BlockEntity implements ImplementedInve
                 sellItem = tradeOffer.getSellItem();
         this.removeStack(BUY_SLOT_1, firstBuyItem.getCount());
         this.removeStack(BUY_SLOT_2, secondBuyItem.getCount());
-        this.setStack(SELL_SLOT, new ItemStack(sellItem.getItem(), getStack(SELL_SLOT).getCount() + sellItem.getCount()));
+        ItemStack result = new ItemStack(sellItem.getItem(), getStack(SELL_SLOT).getCount() + sellItem.getCount());
+        if (sellItem.hasNbt()) result.setNbt(sellItem.getNbt());
+        this.setStack(SELL_SLOT, result);
     }
 
     private boolean hasCraftingFinished() {
@@ -142,17 +144,20 @@ public class TradingStationEntity extends BlockEntity implements ImplementedInve
                 sellItem = tradeOffer.getSellItem();
         boolean firstBuyItemSatisfied =
                 getStack(BUY_SLOT_1).getItem() == firstBuyItem.getItem()
-                        && getStack(BUY_SLOT_1).getCount() >= firstBuyItem.getCount();
+                        && getStack(BUY_SLOT_1).getCount() >= firstBuyItem.getCount()
+                        && Objects.equals(getStack(BUY_SLOT_1).getNbt(), firstBuyItem.getNbt());
         boolean secondBuyItemSatisfied =
                 secondBuyItem.getCount() == 0
                 || (getStack(BUY_SLOT_2).getItem() == secondBuyItem.getItem()
-                        && getStack(BUY_SLOT_2).getCount() >= secondBuyItem.getCount());
+                        && getStack(BUY_SLOT_2).getCount() >= secondBuyItem.getCount()
+                        && Objects.equals(getStack(BUY_SLOT_2).getNbt(), secondBuyItem.getNbt()));
         return firstBuyItemSatisfied && secondBuyItemSatisfied && canInsertItemIntoOutputSlot(sellItem);
     }
 
     private boolean canInsertItemIntoOutputSlot(ItemStack stack) {
         return this.getStack(SELL_SLOT).isEmpty()
                 || (this.getStack(SELL_SLOT).getItem() == stack.getItem()
+                && Objects.equals(getStack(SELL_SLOT).getNbt(), stack.getNbt())
                 && this.getStack(SELL_SLOT).getCount() + stack.getCount() <= getStack(SELL_SLOT).getMaxCount());
     }
 
