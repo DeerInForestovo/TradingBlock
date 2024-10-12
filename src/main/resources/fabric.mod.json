@@ -3,13 +3,12 @@
 	"id": "trading-block",
 	"version": "${version}",
 	"name": "Trading Block",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Use a Trading Agreement to copy down all the trade offers from a villager, and trade with a Trading Station block instead.",
 	"authors": [
-		"Me!"
+		"DeerInForestovo"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/DeerInForestovo/TradingBlock"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/trading_block/icon.png",
