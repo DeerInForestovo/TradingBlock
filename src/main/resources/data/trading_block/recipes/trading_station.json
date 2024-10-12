@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "trading_block",
+  "key": {
+    "S": {
+      "item": "minecraft:cobblestone"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SES",
+    "SSS"
+  ],
+  "result": {
+    "item": "trading_block:trading_station"
+  },
+  "show_notification": true
+}
