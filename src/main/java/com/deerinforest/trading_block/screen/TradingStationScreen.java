@@ -33,6 +33,10 @@ public class TradingStationScreen extends HandledScreen<TradingStationScreenHand
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
 
+        String tradeInfo = this.handler.getTradeInfo();
+        if (tradeInfo != null)
+            context.drawText(this.textRenderer, tradeInfo, x + 46, y + 14, 0xFFFFFF, false);
+
         renderProgressArrow(context, x, y);
     }
 

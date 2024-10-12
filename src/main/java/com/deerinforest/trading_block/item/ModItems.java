@@ -16,7 +16,5 @@ public class ModItems {
         return Registry.register(Registries.ITEM, new Identifier(TradingBlock.MOD_ID, name), item);
     }
 
-    public static void initializeItems() {
-        TradingAgreement.initializeItem();
-    }
+    public static void registerModItems() {}
 }

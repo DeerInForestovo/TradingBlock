@@ -1,6 +1,10 @@
 {
   "item.trading_block.trading_agreement": "Trading Agreement",
   "item.trading_block.trading_agreement_signed": "Trading Agreement (Signed)",
+  "item.trading_block.trading_agreement.shift_right_click": "[Shift + Right Click]: ",
+  "item.trading_block.trading_agreement.right_click": "[Right Click]: ",
+  "item.trading_block.trading_agreement.full_list": "Full List: ",
+  "item.trading_block.trading_agreement.current": "Current Offer: ",
   "block.trading_block.trading_station": "Trading Station",
   "block.trading_block.trading_station.display_name": "Trading Station",
   "itemGroup.trading_block_item_group": "Trading Block",

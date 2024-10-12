@@ -1,34 +1,29 @@
 package com.deerinforest.trading_block.item.custom;
 
-import com.deerinforest.trading_block.TradingBlock;
-import com.deerinforest.trading_block.screen.TradeOfferSelectionScreen;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import com.deerinforest.trading_block.item.ModItems;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 public class TradingAgreement extends Item {
     private static String ItemWithCount(ItemStack item) {
         return item.getCount() + "x " + item.getName().getString();
     }
+    private static final String SELECTED_INDEX_NBT = "selected_index";
 
     public static String TradeOfferToString(TradeOffer tradeOffer) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -42,49 +37,10 @@ public class TradingAgreement extends Item {
         return stringBuilder.toString();
     }
 
-    public static void initializeItem() {
-        /*
-         * Use a TradingAgreement to record the TradeOfferList of the villager and send it to the client.
-         */
-        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (!world.isClient && !player.isSpectator()
-                    && player.getStackInHand(hand).getItem() instanceof TradingAgreement tradingAgreement
-                    && entity instanceof VillagerEntity villager) {
-                if (villager.getVillagerData().getProfession() != VillagerProfession.NONE
-                        && villager.getVillagerData().getProfession() != VillagerProfession.NITWIT) {
-                    TradeOfferList tradeOfferList = villager.getOffers();
-                    PacketByteBuf buf = PacketByteBufs.create();
-                    tradeOfferList.toPacket(buf);
-                    ServerPlayNetworking.send((ServerPlayerEntity) player, TradingBlock.TRADE_OFFER_LIST_CHANNEL, buf);
-                    return ActionResult.SUCCESS;
-                } else {
-                    // TODO: tell the user this villager has no profession
-                    return ActionResult.FAIL;
-                }
-            }
-            return ActionResult.PASS;
-        });
-
-        /*
-         * Open a screen on the client side
-         * Next see: item/screens/TradeOfferSelectionScreen.java
-         */
-        ClientPlayNetworking.registerGlobalReceiver(TradingBlock.TRADE_OFFER_LIST_CHANNEL, (client, handler, buf, responseSender) -> {
-            TradeOfferSelectionScreen screen = new TradeOfferSelectionScreen(TradeOfferList.fromPacket(buf));
-            MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(screen));
-        });
-
-        /*
-        * The client has made a decision on the client side, and it is sent to the server side now
-        */
-        ServerPlayNetworking.registerGlobalReceiver(TradingBlock.TRADE_OFFER_SELECTION_CHANNEL, (server, player, handler, buf, responseSender) -> {
-            TradeOffer tradeOffer = new TradeOffer(Objects.requireNonNull(buf.readNbt()));
-            ItemStack mainHandItemStack = player.getMainHandStack();
-            if (mainHandItemStack.getItem() instanceof TradingAgreement) {
-                mainHandItemStack.setNbt(tradeOffer.toNbt());
-                player.getMainHandStack().setCustomName(Text.translatable("item.trading_block.trading_agreement_signed").formatted(Formatting.ITALIC));
-            }
-        });
+    public static void SignWithVillager(ItemStack stack, TradeOfferList tradeOfferList) {
+        NbtCompound nbt = tradeOfferList.toNbt();
+        nbt.putInt(SELECTED_INDEX_NBT, 0);
+        stack.setNbt(nbt);
     }
 
     public TradingAgreement(Settings settings) {
@@ -99,13 +55,63 @@ public class TradingAgreement extends Item {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (stack.hasNbt()) {
-            TradeOffer tradeOffer = new TradeOffer(stack.getNbt());
-            tooltip.add(Text.of(TradeOfferToString(tradeOffer)));
+            TradeOfferList tradeOfferList = getTradeOfferList(stack);
+            if (context.isAdvanced()) {
+                tooltip.add(Text.translatable("item.trading_block.trading_agreement.full_list"));
+                for (TradeOffer tradeOffer: tradeOfferList) {
+                    tooltip.add(Text.literal(TradeOfferToString(tradeOffer)));
+                }
+            } else {
+                int selectedIndex = getSelectedIndex(stack), length = tradeOfferList.size();
+                tooltip.add(Text.translatable("item.trading_block.trading_agreement.shift_right_click").formatted(Formatting.RED, Formatting.ITALIC)
+                        .append(Text.literal(TradeOfferToString(tradeOfferList.get((selectedIndex + length - 1) % length))).formatted(Formatting.DARK_GRAY, Formatting.ITALIC)));
+                tooltip.add(Text.literal(TradeOfferToString(tradeOfferList.get(selectedIndex))));
+                tooltip.add(Text.translatable("item.trading_block.trading_agreement.right_click").formatted(Formatting.GREEN, Formatting.ITALIC)
+                        .append(Text.literal(TradeOfferToString(tradeOfferList.get((selectedIndex + 1) % length))).formatted(Formatting.DARK_GRAY, Formatting.ITALIC)));
+            }
         }
     }
 
+    private void informClientCurrentOffer(ItemStack stack) {
+        if (stack.hasNbt()) {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client != null && client.player != null) {
+                client.inGameHud.setOverlayMessage(
+                        Text.translatable("item.trading_block.trading_agreement.current").formatted(Formatting.YELLOW)
+                                .append(Text.literal(TradeOfferToString(getTradeOffer(stack))).formatted(Formatting.WHITE)), false);
+            }
+        }
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+        if (!world.isClient) {
+            if (stack.getItem() == ModItems.TRADING_AGREEMENT && stack.hasNbt()) {
+                NbtCompound nbt = stack.getNbt();
+                TradeOfferList tradeOfferList = getTradeOfferList(stack);
+                int selectedIndex = getSelectedIndex(stack), length = tradeOfferList.size();
+                if (user.isSneaking()) nbt.putInt(SELECTED_INDEX_NBT, (selectedIndex + length - 1) % length);
+                    else nbt.putInt(SELECTED_INDEX_NBT, (selectedIndex + 1) % length);
+                stack.setNbt(nbt);
+                informClientCurrentOffer(stack);
+            }
+        }
+        return super.use(world, user, hand);
+    }
+
+    public static TradeOfferList getTradeOfferList(ItemStack stack) {
+        if (stack.hasNbt()) return new TradeOfferList(stack.getNbt());
+            else return null;
+    }
+
+    public static int getSelectedIndex(ItemStack stack) {
+        if (stack.hasNbt()) return stack.getNbt().getInt(SELECTED_INDEX_NBT);
+            else return 0;
+    }
+
     public static TradeOffer getTradeOffer(ItemStack stack) {
-        if (stack.hasNbt()) return new TradeOffer(stack.getNbt());
+        if (stack.hasNbt()) return getTradeOfferList(stack).get(getSelectedIndex(stack));
             else return null;
     }
 }

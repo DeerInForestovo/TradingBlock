@@ -1,6 +1,8 @@
 package com.deerinforest.trading_block.screen;
 
 import com.deerinforest.trading_block.block.entity.TradingStationEntity;
+import com.deerinforest.trading_block.item.ModItems;
+import com.deerinforest.trading_block.item.custom.TradingAgreement;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -27,7 +29,7 @@ public class TradingStationScreenHandler extends ScreenHandler {
         super(ModScreenHandlers.TRADING_STATION_SCREEN_HANDLER, syncId);
         checkSize(((Inventory) blockEntity), 4);
         this.inventory = ((Inventory) blockEntity);
-        inventory.onOpen(playerInventory.player);
+        this.inventory.onOpen(playerInventory.player);
         this.propertyDelegate = arrayPropertyDelegate;
         this.blockEntity = ((TradingStationEntity) blockEntity);
 
@@ -40,6 +42,13 @@ public class TradingStationScreenHandler extends ScreenHandler {
         addPlayerHotbar(playerInventory);
 
         addProperties(arrayPropertyDelegate);
+    }
+
+    public String getTradeInfo() {
+        ItemStack stack = this.inventory.getStack(0);
+        if (stack.getItem() == ModItems.TRADING_AGREEMENT)
+            return TradingAgreement.TradeOfferToString(TradingAgreement.getTradeOffer(stack));
+        else return null;
     }
 
     public boolean isCrafting() {
