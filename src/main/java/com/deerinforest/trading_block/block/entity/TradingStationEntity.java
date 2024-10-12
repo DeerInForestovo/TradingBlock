@@ -132,6 +132,7 @@ public class TradingStationEntity extends BlockEntity implements ImplementedInve
 
     private boolean isTASatisfied() {
         if (!(getStack(TA_SLOT).getItem() instanceof TradingAgreement)) return false;
+        if (!getStack(TA_SLOT).hasNbt()) return false;  // Unsigned TA
         TradeOffer tradeOffer = TradingAgreement.getTradeOffer(getStack(TA_SLOT));
         ItemStack firstBuyItem = tradeOffer.getAdjustedFirstBuyItem(), secondBuyItem = tradeOffer.getSecondBuyItem(),
                 sellItem = tradeOffer.getSellItem();
