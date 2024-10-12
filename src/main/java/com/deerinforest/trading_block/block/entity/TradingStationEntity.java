@@ -177,7 +177,8 @@ public class TradingStationEntity extends BlockEntity implements ImplementedInve
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction side) {
-        return slot == BUY_SLOT_1 || (slot == BUY_SLOT_2 && side == Direction.UP);
+        return (slot == BUY_SLOT_1 && side != Direction.UP && side != Direction.DOWN)
+                || (slot == BUY_SLOT_2 && (side == Direction.UP || side == Direction.DOWN));
     }
 
     @Override
