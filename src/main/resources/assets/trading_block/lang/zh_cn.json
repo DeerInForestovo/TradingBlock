@@ -4,5 +4,9 @@
   "block.trading_block.trading_station": "交易站",
   "block.trading_block.trading_station.display_name": "交易站",
   "itemGroup.trading_block_item_group": "交易方块",
-  "screen.trade_offer_selection_screen_title": "选择一个要签署的交易"
+  "screen.trade_offer_selection_screen_title": "选择一个要签署的交易",
+  "item.trading_block.trading_agreement.shift_right_click": "[Shift + 右键]: ",
+  "item.trading_block.trading_agreement.right_click": "[右键]: ",
+  "item.trading_block.trading_agreement.full_list": "完整列表: ",
+  "item.trading_block.trading_agreement.current": "当前交易: "
 }
