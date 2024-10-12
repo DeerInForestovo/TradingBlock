@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -17,11 +18,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class TradingStationEntity extends BlockEntity implements ImplementedInventory, ExtendedScreenHandlerFactory {
+import java.util.stream.IntStream;
+
+public class TradingStationEntity extends BlockEntity implements ImplementedInventory, ExtendedScreenHandlerFactory, SidedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
 
     private static final int TA_SLOT = 0;
@@ -159,5 +163,20 @@ public class TradingStationEntity extends BlockEntity implements ImplementedInve
     @Override
     public Text getDisplayName() {
         return Text.translatable("block.trading_block.trading_station.display_name");
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        return new int[]{0, 1, 2, 3};
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction side) {
+        return slot == BUY_SLOT_1 || (slot == BUY_SLOT_2 && side == Direction.UP);
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction side) {
+        return slot == SELL_SLOT;
     }
 }
